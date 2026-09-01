@@ -1,1 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MecaMind · Automação & Inteligência Industrial</title>
+  <!-- Tailwind via CDN + base custom -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Chart.js para gráfico interativo -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --navy: #0b1a2e;
+      --graphite: #2c3e4f;
+      --neon-orange: #f97316;
+      --neon-green: #22d3a7;
+      --light-gray: #f1f5f9;
+    }
+    * { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #fafcff; }
+    .bg-navy { background-color: var(--navy); }
+    .bg-graphite { background-color: var(--graphite); }
+    .text-neon-orange { color: var(--neon-orange); }
+    .text-neon-green { color: var(--neon-green); }
+    .border-neon-orange { border-color: var(--neon-orange); }
+    .btn-primary {
+      background-color: var(--neon-orange);
+      color: #0b1a2e;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+    .btn-primary:hover {
+      background-color: #ea580c;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -8px rgba(249, 115, 22, 0.4);
+    }
+    .btn-secondary {
+      background-color: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      font-weight: 500;
+      transition: all 0.25s ease;
+    }
+    .btn-secondary:hover {
+      border-color: var(--neon-orange);
+      color: var(--neon-orange);
+      transform: translateY(-2px);
+    }
+    .card-solution {
+      background: white;
+      border-radius: 1.5rem;
+      transition: 0.3s ease;
+      border: 1px solid #e2e8f0;
+    }
+    .card-solution:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 30px -12px rgba(11, 26, 46, 0.15);
+      border-color: var(--neon-orange);
+    }
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: var(--neon-orange);
+      border-radius: 4px;
+      margin-top: 6px;
+    }
+    .hero-gradient {
+      background: linear-gradient(135deg, #0b1a2e 0%, #1a2f44 100%);
+    }
+    .input-field, .select-field {
+      background: white;
+      border: 1px solid #d1d9e6;
+      border-radius: 12px;
+      padding: 0.9rem 1.2rem;
+      width: 100%;
+      transition: 0.2s;
+    }
+    .input-field:focus, .select-field:focus {
+      outline: none;
+      border-color: var(--neon-orange);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+    }
+    .dashboard-card {
+      background: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+      transition: 0.2s;
+    }
+    .live-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: #22d3a7;
+      border-radius: 50%;
+      animation: pulse-dot 1.5s infinite;
+    }
+    @keyframes pulse-dot {
+      0% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.4; transform: scale(0.9); }
+    }
+    .kpi-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0b1a2e;
+    }
+  </style>
+</head>
+<body>
 
+<!-- ===== HERO ===== -->
+<header class="hero-gradient text-white relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6 py-12 md:py-20 lg:py-28 flex flex-col md:flex-row items-center justify-between gap-10">
+    <div class="md:w-3/5 z-10">
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-3xl font-bold tracking-tight">MecaMind</span>
+        <span class="bg-neon-orange text-navy text-xs font-bold px-3 py-1 rounded-full">Indústria 4.0</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-bold leading-tight mt-2">
+        <span class="text-neon-orange">Conectando</span> o Chão de Fábrica ao Futuro Digital
+      </h1>
+      <p class="text-lg md:text-xl text-gray-300 mt-4 max-w-2xl">
+        com SCADA e Gêmeos Digitais · Automação inteligente para a próxima geração.
+      </p>
+      <div class="flex flex-wrap gap-4 mt-8">
+        <a href="#contato" class="btn-primary px-8 py-4 rounded-full text-base shadow-lg shadow-orange-500/20 inline-flex items-center gap-2">
+          <i class="fas fa-file-invoice"></i> Solicite um Orçamento
+        </a>
+        <a href="#solucoes" class="btn-secondary px-7 py-4 rounded-full text-base inline-flex items-center gap-2">
+          <i class="fas fa-play-circle"></i> Demonstração BluePlant
+        </a>
+      </div>
+      <div class="flex flex-wrap items-center gap-5 mt-8 text-sm text-gray-300">
+        <span><i class="fas fa-check-circle text-neon-green mr-1"></i> SCADA BluePlant</span>
+        <span><i class="fas fa-check-circle text-neon-green mr-1"></i> Gêmeos Digitais</span>
+        <span><i class="fas fa-check-circle text-neon-green mr-1"></i> CLP & OPC UA</span>
+      </div>
+    </div>
+    <div class="md:w-2/5 flex justify-center md:justify-end z-10">
+      <div class="bg-white/5 backdrop-blur-sm p-6 rounded-3xl border border-white/10">
+        <i class="fas fa-microchip text-8xl text-neon-orange/70"></i>
+        <div class="mt-3 text-right text-sm text-gray-300"><i class="fas fa-robot"></i> MecaMind Core</div>
+      </div>
+    </div>
+  </div>
+  <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-neon-orange via-transparent to-neon-orange/30"></div>
+</header>
+
+<!-- ===== QUEM SOMOS ===== -->
+<section class="py-20 px-6 max-w-7xl mx-auto">
+  <div class="flex flex-col lg:flex-row gap-12 items-center">
+    <div class="lg:w-1/2">
+      <span class="text-neon-orange font-semibold text-sm tracking-widest uppercase">Sobre a MecaMind</span>
+      <h2 class="section-title text-3xl md:text-4xl font-bold text-navy mt-2">Integração que <span class="text-neon-orange">transforma</span></h2>
+      <p class="text-gray-600 text-lg leading-relaxed mt-6">
+        Somos especialistas na integração de <strong>mecatrônica, eletrônica, TI e automação</strong>. 
+        Combinamos inovação contínua, agilidade na solução de problemas e foco no <strong>ROI do cliente</strong>. 
+        Lideramos a transição para a Indústria 4.0 com tecnologia de ponta.
+      </p>
+      <div class="grid grid-cols-2 gap-4 mt-8">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+          <i class="fas fa-bolt text-2xl text-neon-orange"></i>
+          <p class="font-bold text-navy mt-1">Agilidade</p>
+          <p class="text-sm text-gray-500">Soluções em tempo recorde</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+          <i class="fas fa-chart-line text-2xl text-neon-orange"></i>
+          <p class="font-bold text-navy mt-1">ROI garantido</p>
+          <p class="text-sm text-gray-500">Retorno mensurável</p>
+        </div>
+      </div>
+    </div>
+    <div class="lg:w-1/2 bg-graphite/10 p-6 rounded-3xl border-l-8 border-neon-orange">
+      <blockquote class="text-xl italic text-navy/80">
+        “Não automatizamos por automatizar: entregamos eficiência, redução de custos e competitividade real.”
+      </blockquote>
+      <div class="flex items-center gap-3 mt-4">
+        <div class="w-12 h-12 bg-navy rounded-full flex items-center justify-center text-white font-bold">MM</div>
+        <div><p class="font-semibold text-navy">Equipe MecaMind</p><p class="text-sm text-gray-500">Engenharia & Inovação</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SOLUÇÕES ===== -->
+<section id="solucoes" class="bg-light-gray py-20 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center max-w-2xl mx-auto">
+      <span class="text-neon-orange font-semibold text-sm tracking-widest uppercase">Serviços</span>
+      <h2 class="section-title text-3xl md:text-4xl font-bold text-navy text-center">Soluções Mecatrônicas</h2>
+      <p class="text-gray-500 mt-6">Tecnologia integrada para a fábrica do futuro</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+      <div class="card-solution p-6 hover:border-neon-orange">
+        <div class="w-14 h-14 bg-navy/10 rounded-2xl flex items-center justify-center text-3xl text-neon-orange"><i class="fas fa-cubes"></i></div>
+        <h3 class="text-xl font-bold text-navy mt-4">CAD 3D & Digital Twins</h3>
+        <p class="text-gray-500 text-sm mt-2 leading-relaxed">Simulação virtual de linhas de produção, validação de processos sem paradas e manutenção preditiva.</p>
+      </div>
+      <div class="card-solution p-6 hover:border-neon-orange">
+        <div class="w-14 h-14 bg-navy/10 rounded-2xl flex items-center justify-center text-3xl text-neon-orange"><i class="fas fa-display"></i></div>
+        <h3 class="text-xl font-bold text-navy mt-4">SCADA & BluePlant</h3>
+        <p class="text-gray-500 text-sm mt-2 leading-relaxed">Desenvolvimento de IHM/SCADA com BluePlant: supervisão centralizada, dashboards intuitivos e dados em tempo real.</p>
+      </div>
+      <div class="card-solution p-6 hover:border-neon-orange">
+        <div class="w-14 h-14 bg-navy/10 rounded-2xl flex items-center justify-center text-3xl text-neon-orange"><i class="fas fa-microchip"></i></div>
+        <h3 class="text-xl font-bold text-navy mt-4">CLP & Eletrônica</h3>
+        <p class="text-gray-500 text-sm mt-2 leading-relaxed">Automação industrial, sensores avançados, placas customizadas e protocolos OPC UA, Modbus e MQTT.</p>
+      </div>
+      <div class="card-solution p-6 hover:border-neon-orange">
+        <div class="w-14 h-14 bg-navy/10 rounded-2xl flex items-center justify-center text-3xl text-neon-orange"><i class="fas fa-eye"></i></div>
+        <h3 class="text-xl font-bold text-navy mt-4">Visão Computacional</h3>
+        <p class="text-gray-500 text-sm mt-2 leading-relaxed">Inspeção automatizada de peças e controle de qualidade via inteligência artificial.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DIFERENCIAL ===== -->
+<section class="py-20 px-6 max-w-7xl mx-auto">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <span class="text-neon-orange font-semibold text-sm tracking-widest uppercase">Diferencial</span>
+      <h2 class="section-title text-3xl md:text-4xl font-bold text-navy">Por que a MecaMind?</h2>
+      <ul class="mt-8 space-y-6">
+        <li class="flex gap-4">
+          <span class="text-2xl text-neon-green"><i class="fas fa-check-circle"></i></span>
+          <div><strong class="text-navy">Eliminação de Desperdícios (Lean 4.0)</strong>
+          <p class="text-gray-500">Redução do downtime com comissionamento virtual prévio e diagnósticos no SCADA BluePlant.</p></div>
+        </li>
+        <li class="flex gap-4">
+          <span class="text-2xl text-neon-green"><i class="fas fa-check-circle"></i></span>
+          <div><strong class="text-navy">Eficiência 4.0</strong>
+          <p class="text-gray-500">Otimização do consumo de energia, manutenção preditiva e aumento imediato do OEE da planta.</p></div>
+        </li>
+      </ul>
+      <div class="mt-8 bg-navy/5 p-5 rounded-2xl border-l-4 border-neon-orange">
+        <p class="text-navy font-medium"><i class="fas fa-arrow-right text-neon-orange mr-2"></i> Redução de até <strong class="text-neon-orange">40%</strong> em paradas não planejadas</p>
+      </div>
+    </div>
+    <div class="bg-graphite/5 p-8 rounded-3xl relative">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white p-5 rounded-2xl shadow-sm text-center"><i class="fas fa-microchip text-3xl text-neon-orange"></i><p class="font-bold text-navy mt-2">OEE</p><p class="text-xs text-gray-400">+23% médio</p></div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm text-center"><i class="fas fa-bolt text-3xl text-neon-orange"></i><p class="font-bold text-navy mt-2">Energia</p><p class="text-xs text-gray-400">-15% consumo</p></div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm text-center"><i class="fas fa-clock text-3xl text-neon-orange"></i><p class="font-bold text-navy mt-2">Downtime</p><p class="text-xs text-gray-400">-32%</p></div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm text-center"><i class="fas fa-robot text-3xl text-neon-orange"></i><p class="font-bold text-navy mt-2">ROI</p><p class="text-xs text-gray-400">em < 12 meses</p></div>
+      </div>
+      <div class="absolute -top-3 -right-3 bg-neon-orange text-navy text-xs font-bold px-4 py-1 rounded-full shadow-lg">Indústria 4.0</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SEÇÃO INTERATIVA – DASHBOARD DINÂMICO ===== -->
+<section class="py-16 px-6 bg-navy/5">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-10">
+      <span class="text-neon-orange font-semibold text-sm tracking-widest uppercase"><i class="fas fa-chart-simple mr-1"></i> Monitoramento 4.0</span>
+      <h2 class="section-title text-3xl md:text-4xl font-bold text-navy text-center">Planta Digital em Tempo Real</h2>
+      <p class="text-gray-500 mt-2">Simulação interativa de indicadores de uma linha de produção conectada</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- KPIs ao vivo -->
+      <div class="lg:col-span-1 space-y-4">
+        <div class="dashboard-card p-6 flex items-center justify-between">
+          <div><span class="text-sm text-gray-500">OEE</span><div class="kpi-value" id="kpiOEE">87.4%</div></div>
+          <i class="fas fa-chart-line text-3xl text-neon-orange"></i>
+        </div>
+        <div class="dashboard-card p-6 flex items-center justify-between">
+          <div><span class="text-sm text-gray-500">Disponibilidade</span><div class="kpi-value" id="kpiDisp">94.2%</div></div>
+          <i class="fas fa-clock text-3xl text-neon-green"></i>
+        </div>
+        <div class="dashboard-card p-6 flex items-center justify-between">
+          <div><span class="text-sm text-gray-500">Tempo Médio entre Falhas (MTBF)</span><div class="kpi-value" id="kpiMTBF">128<span class="text-base font-normal">h</span></div></div>
+          <i class="fas fa-gear text-3xl text-orange-300"></i>
+        </div>
+        <div class="dashboard-card p-6 flex items-center justify-between">
+          <div><span class="text-sm text-gray-500">Produção (última hora)</span><div class="kpi-value" id="kpiProd">342 <span class="text-base font-normal">un</span></div></div>
+          <i class="fas fa-boxes text-3xl text-emerald-400"></i>
+        </div>
+        <div class="dashboard-card p-4 bg-navy text-white flex items-center gap-3">
+          <span class="live-dot"></span>
+          <span class="text-sm font-medium">Dados atualizados a cada 3s</span>
+          <span class="ml-auto text-xs text-gray-300" id="lastUpdate">agora</span>
+        </div>
+      </div>
+
+      <!-- Gráfico + gauge interativo -->
+      <div class="lg:col-span-2 dashboard-card p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-navy"><i class="fas fa-chart-bar text-neon-orange mr-2"></i> Eficiência por linha (últimas 24h)</h3>
+          <button id="randomizeBtn" class="text-xs bg-navy/10 hover:bg-navy/20 text-navy px-4 py-2 rounded-full transition">
+            <i class="fas fa-rotate mr-1"></i> Atualizar simulação
+          </button>
+        </div>
+        <div class="relative" style="height:220px;">
+          <canvas id="efficiencyChart"></canvas>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mt-4 text-sm">
+          <div class="bg-gray-50 p-2 rounded-xl flex items-center gap-2">
+            <i class="fas fa-circle text-emerald-400 text-xs"></i> Linha A · <span id="lineAVal">92%</span>
+          </div>
+          <div class="bg-gray-50 p-2 rounded-xl flex items-center gap-2">
+            <i class="fas fa-circle text-blue-400 text-xs"></i> Linha B · <span id="lineBVal">78%</span>
+          </div>
+          <div class="bg-gray-50 p-2 rounded-xl flex items-center gap-2">
+            <i class="fas fa-circle text-amber-400 text-xs"></i> Linha C · <span id="lineCVal">85%</span>
+          </div>
+          <div class="bg-gray-50 p-2 rounded-xl flex items-center gap-2">
+            <i class="fas fa-circle text-rose-400 text-xs"></i> Linha D · <span id="lineDVal">63%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FORMULÁRIO ===== -->
+<section id="contato" class="bg-navy text-white py-20 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+      <span class="text-neon-orange font-semibold text-sm tracking-widest uppercase">Contato</span>
+      <h2 class="text-3xl md:text-4xl font-bold">Solicite um diagnóstico</h2>
+      <p class="text-gray-300 mt-2">Preencha e receba uma análise personalizada para sua planta</p>
+    </div>
+    <form action="#" method="POST" class="bg-white/10 backdrop-blur-sm p-8 rounded-3xl border border-white/10">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div><label class="block text-sm font-medium text-gray-200">Nome completo</label><input type="text" placeholder="Seu nome" class="input-field bg-white/90 text-navy" required></div>
+        <div><label class="block text-sm font-medium text-gray-200">E-mail corporativo</label><input type="email" placeholder="empresa@email.com" class="input-field bg-white/90 text-navy" required></div>
+        <div><label class="block text-sm font-medium text-gray-200">Telefone / WhatsApp</label><input type="tel" placeholder="(11) 99999-9999" class="input-field bg-white/90 text-navy"></div>
+        <div><label class="block text-sm font-medium text-gray-200">Empresa</label><input type="text" placeholder="Nome da empresa" class="input-field bg-white/90 text-navy"></div>
+        <div><label class="block text-sm font-medium text-gray-200">Cargo</label><input type="text" placeholder="Ex: Engenheiro de Automação" class="input-field bg-white/90 text-navy"></div>
+        <div><label class="block text-sm font-medium text-gray-200">Qual sua necessidade?</label>
+          <select class="select-field bg-white/90 text-navy">
+            <option value="">Selecione...</option>
+            <option>Implementação SCADA (BluePlant)</option><option>Gêmeos Digitais / Simulação</option>
+            <option>Projeto Mecatrônico Completo</option><option>Consultoria 4.0</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-5">
+        <label class="block text-sm font-medium text-gray-200">Qual o maior desafio da sua linha de produção hoje?</label>
+        <textarea rows="2" placeholder="Descreva brevemente..." class="input-field bg-white/90 text-navy"></textarea>
+      </div>
+      <div class="mt-8 text-center">
+        <button type="submit" class="btn-primary px-12 py-4 rounded-full text-lg font-bold shadow-lg shadow-orange-500/30 inline-flex items-center gap-3">
+          <i class="fas fa-paper-plane"></i> Enviar e Receber Diagnóstico
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-navy/95 border-t border-gray-700 text-gray-300 py-8 px-6">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl font-bold text-white">MecaMind</span>
+      <span class="text-xs bg-neon-orange/20 text-neon-orange px-3 py-1 rounded-full">Indústria 4.0</span>
+    </div>
+    <div class="flex gap-6 text-sm">
+      <a href="#" class="hover:text-neon-orange"><i class="fab fa-linkedin"></i> LinkedIn</a>
+      <a href="#" class="hover:text-neon-orange"><i class="fab fa-youtube"></i> YouTube</a>
+      <a href="#" class="hover:text-neon-orange"><i class="fas fa-envelope"></i> contato@mecamind.ai</a>
+    </div>
+    <div class="text-xs text-gray-500">&copy; 2026 MecaMind Automação & Inteligência Industrial</div>
+  </div>
+</footer>
+
+<!-- ===== SCRIPT INTERATIVO ===== -->
+<script>
+  (function() {
+    // ---- Elementos ----
+    const kpiOEE = document.getElementById('kpiOEE');
+    const kpiDisp = document.getElementById('kpiDisp');
+    const kpiMTBF = document.getElementById('kpiMTBF');
+    const kpiProd = document.getElementById('kpiProd');
+    const lastUpdate = document.getElementById('lastUpdate');
+
+    const lineAVal = document.getElementById('lineAVal');
+    const lineBVal = document.getElementById('lineBVal');
+    const lineCVal = document.getElementById('lineCVal');
+    const lineDVal = document.getElementById('lineDVal');
+
+    // ---- Chart.js ----
+    const ctx = document.getElementById('efficiencyChart').getContext('2d');
+    let chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Linha A', 'Linha B', 'Linha C', 'Linha D'],
+        datasets: [{
+          label: 'Eficiência (%)',
+          data: [92, 78, 85, 63],
+          backgroundColor: ['#22d3a7', '#60a5fa', '#fbbf24', '#fb7185'],
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { min: 0, max: 100, grid: { color: 'rgba(0,0,0,0.05)' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // ---- Função para gerar números aleatórios ----
+    function rand(min, max) { return Math.round((Math.random() * (max - min) + min) * 10) / 10; }
+
+    // ---- Atualizar dados ----
+    function updateDashboard() {
+      // KPIs
+      const oee = rand(78, 96);
+      const disp = rand(88, 98);
+      const mtbf = rand(110, 160);
+      const prod = rand(300, 420);
+      kpiOEE.textContent = oee.toFixed(1) + '%';
+      kpiDisp.textContent = disp.toFixed(1) + '%';
+      kpiMTBF.innerHTML = mtbf + '<span class="text-base font-normal">h</span>';
+      kpiProd.innerHTML = prod + ' <span class="text-base font-normal">un</span>';
+
+      // Linhas (gráfico)
+      const newA = rand(82, 97);
+      const newB = rand(68, 88);
+      const newC = rand(72, 92);
+      const newD = rand(55, 78);
+      chart.data.datasets[0].data = [newA, newB, newC, newD];
+      chart.update();
+
+      lineAVal.textContent = newA + '%';
+      lineBVal.textContent = newB + '%';
+      lineCVal.textContent = newC + '%';
+      lineDVal.textContent = newD + '%';
+
+      // Timestamp
+      const now = new Date();
+      lastUpdate.textContent = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    // ---- Botão para randomizar manualmente ----
+    document.getElementById('randomizeBtn').addEventListener('click', updateDashboard);
+
+    // ---- Atualização automática a cada 3 segundos ----
+    setInterval(updateDashboard, 3000);
+
+    // ---- Inicializar com dados vivos ----
+    updateDashboard();
+
+    // ---- Formulário (apenas demo) ----
+    document.querySelector('form')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('✅ Diagnóstico solicitado! Em breve nossa equipe entrará em contato.');
+      this.reset();
+    });
+
+  })();
+</script>
+</body>
+</html>
