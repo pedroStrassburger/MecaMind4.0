@@ -1,1 +1,0 @@
-# MecaMind4.0
